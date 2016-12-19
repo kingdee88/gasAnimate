@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .wave{position:relative;width: 160px;height: 260px;}
+        .wave span{display:inline-block;color:#fff;font-size:20px;position:absolute;z-index:2;left: 50%;margin-left: -24px;top:50%;}
+        .wave canvas{position:absolute;left:0;top:0;z-index:1;}
+    </style>
+</head>
+
+<body>
+   <div class="wave"><canvas id="myCanvas" width="160" height="260"></canvas><span>70%</span></div>
+
+     <div class="wave"><canvas id="myCanvas2" width="160" height="260"></canvas><span>20%</span></div>
+</body>
+
+</html>
+<script>
+var ware = function(option) {
+    if(option){
+        var gasOption = option;
+         var waveWidth = 300,
+        offset = 0,
+        waveHeight = 8,
+        waveCount = 2,
+        startX = -140,
+        startY = 204,
+        progress = 0,
+        progressStep = 1,
+        d2 = waveWidth / waveCount,
+        d = d2 / 2,
+        hd = d / 2,
+        gasColor= gasOption.color || '#2ed77d',
+        domId=gasOption.domId || 'myCanvas',
+        pre=gasOption.pre || '0';
+    }else{
+        var gasOption = {};
+    }
+
+
+
+    var c = document.getElementById(domId);
+    var ctx = c.getContext("2d");
+    var img = new Image();
+    ctx.fillStyle = gasColor;
+
+    function tick() {
+        offset -= 2;
+        progress += progressStep;
+        if (progress > 260 || progress < 0) progressStep *= 1;
+        if (-1 * offset === d2) offset = 0;
+        ctx.clearRect(0, 0, c.width, c.height);
+        ctx.beginPath();
+        var offsetY =260-260*pre;
+        ctx.moveTo(startX - offset, offsetY);
+        for (var i = 0; i < waveCount; i++) {
+            var dx = i * d2;
+            var offsetX = dx + startX - offset;
+            ctx.quadraticCurveTo(offsetX + hd, offsetY + waveHeight, offsetX + d, offsetY);
+            ctx.quadraticCurveTo(offsetX + hd + d, offsetY - waveHeight, offsetX + d2, offsetY);
+        }
+
+
+        ctx.lineTo(startX + waveWidth, 300);
+        ctx.lineTo(startX, 300);
+
+        ctx.fill();
+        //画布上已有的内容只会在它和新图形重叠的地方保留。新图形绘制于内容之后。
+        ctx.globalCompositeOperation = "destination-atop";
+        ctx.drawImage(img, 0, -1)
+        requestAnimationFrame(tick);
+    }
+
+    img.onload = function() {
+        tick();
+    };
+    img.src = "clocks-1.png";
+}
+
+ware({domId:'myCanvas',pre:'0.7'});
+ware({domId:'myCanvas2',color:'#f46c6c',pre:'0.2'});
+
+</script>
